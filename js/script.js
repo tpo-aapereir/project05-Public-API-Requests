@@ -1,11 +1,21 @@
+/* eslint-env browser */
+'use strict'
+// bring in the information used in the data array
 fetch('https://randomuser.me/api/?nat=us&results=12')
-  .then((response) => {
-    return response.json()
+  .then((res) => {
+    return res.json()
   })
   .then(data => {
     createGallery(data)
   })
 
+/**
+ * Display the specified employee data on the screen.
+ *
+ * @param {Array}   data   The employee data.
+ *
+ * @return {undefined}
+ */
 function createGallery (data) {
   data.results.forEach((entry) => {
     const card = document.createElement('DIV')
@@ -24,39 +34,51 @@ function createGallery (data) {
     card.insertAdjacentHTML('beforeend', cardHTML)
 
     // Event listener for modal window creation
-    card.addEventListener('click', () =>
-      createModal(entry))
+    card.addEventListener('click', () => createModal(entry))
 
     document.querySelector('#gallery').insertAdjacentElement('beforeend', card)
   })
 }
 
+/**
+ * Display the specified employee data on the screen.
+ *
+ * @param {Array}   employee   The employee pop up window.
+ *
+ * @return {undefined}
+ */
 function createModal (employee) {
   const modal = document.createElement('DIV')
   modal.className = 'modal-container'
 
+  /**
+   * Employee DOB is in ISO8601 format, but we want to
+   * convert to locale-specific format.
+   */
   const dob = employee.dob.date
-  const modalHTML = `<div class="modal">
-    <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
-    <div class="modal-info-container">
-        <img class="modal-img" src="${employee.picture.large}" alt="profile picture">
-        <h3 id="name" class="modal-name cap">${employee.name.first} ${employee.name.last}</h3>
-        <p class="modal-text">${employee.email}</p>
-        <p class="modal-text cap">${employee.location.city}</p>
-        <hr>
-        <p class="modal-text">${employee.cell.replace(/-/, ' ')}</p>
-        <p class="modal-text">${employee.location.street.number} ${employee.location.street.name}
-      <br>${employee.location.city}, ${employee.location.state} ${employee.location.postcode}</p>
-    <p class="modal-text">Birthday: ${dob.substr(5, 2)}/${dob.substr(8, 2)}/${dob.substr(2, 2)}</p>
-    </div>
-</div>
-</div>`
+  const modalHTML =
+   `<div class="modal">
+      <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
+      <div class="modal-info-container">
+          <img class="modal-img" src="${employee.picture.large}" alt="profile picture">
+          <h3 id="name" class="modal-name cap">${employee.name.first} ${employee.name.last}</h3>
+          <p class="modal-text">${employee.email}</p>
+          <p class="modal-text cap">${employee.location.city}</p>
+          <hr>
+          <p class="modal-text">${employee.cell.replace(/-/, ' ')}</p>
+          <p class="modal-text">${employee.location.street.number} ${employee.location.street.name}
+          <br>${employee.location.city}, ${employee.location.state} ${employee.location.postcode}</p>
+          <p class="modal-text">Birthday: ${dob.substr(5, 2)}/${dob.substr(8, 2)}/${dob.substr(2, 2)}</p>
+      </div>
+    </div>`
 
   modal.insertAdjacentHTML('beforeend', modalHTML)
   document.body.insertAdjacentElement('beforeend', modal)
 
   // remove modal element with an event listener
-  document.querySelector('#modal-close-btn').addEventListener('click', () => {
-    modal.remove()
-  })
+  document
+    .querySelector('#modal-close-btn')
+    .addEventListener('click', () => {
+      modal.remove()
+    })
 }
